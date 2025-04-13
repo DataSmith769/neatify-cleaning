@@ -1,0 +1,132 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+{
+    'name': 'My Appointment Booking with Calendar (Fixed)',
+    'version': '1.1',
+    'summary': 'Appointment booking module with calendar view and error fix',
+    'author': 'You',
+    'category': 'Tools',
+    'depends': ['base', 'web', 'calendar'],
+    'data': [
+        'views/appointment_views.xml',
+    ],
+    'assets': {
+        'web.assets_backend': [
+            'my_appointment_booking_calendar/static/src/js/calendar.js',
+        ],
+    },
+    'installable': True,
+    'application': True,
+}
+<odoo>
+<record id="view_form_my_appointment" model="ir.ui.view">
+<field name="name">my.appointment.form</field>
+<field name="model">my.appointment</field>
+<field name="arch" type="xml">
+<form string="Appointment">
+<sheet>
+<group>
+<field name="name"/>
+<field name="email"/>
+<field name="appointment_date"/>
+<field name="time_slot"/>
+<field name="notes"/>
+</group>
+</sheet>
+</form>
+</field>
+</record>
+<record id="view_tree_my_appointment" model="ir.ui.view">
+<field name="name">my.appointment.tree</field>
+<field name="model">my.appointment</field>
+<field name="arch" type="xml">
+<tree>
+<field name="name"/>
+<field name="appointment_date"/>
+<field name="time_slot"/>
+</tree>
+</field>
+</record>
+<record id="action_my_appointment" model="ir.actions.act_window">
+<field name="name">Appointments</field>
+<field name="res_model">my.appointment</field>
+<field name="view_mode">tree,form,calendar</field>
+</record>
+<menuitem id="menu_my_appointment_root" name="Appointment Booking"/>
+<menuitem id="menu_my_appointment" name="Appointments" parent="menu_my_appointment_root" action="action_my_appointment"/>
+</odoo>odoo.define('my_appointment_booking_calendar.calendar', function (require) {
+    "use strict";
+    const CalendarView = require('web.CalendarView');
+    CalendarView.include({
+        getDefaultOptions: function () {
+            const options = this._super.apply(this, arguments);
+            options.weekends = true;
+            options.defaultView = 'dayGridMonth';
+            return options;
+        },
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const confirmBtn = document.getElementById('confirmAppointmentBtn');
+        const resultBox = document.getElementById('appointmentResult');
+
+        if (confirmBtn && resultBox) {
+            confirmBtn.addEventListener('click', function () {
+                const selectedDate = document.querySelector('.btn-primary.select-date')?.dataset?.date;
+                const selectedTime = document.getElementById('time_select')?.value;
+                if (!selectedDate || !selectedTime) {
+                    resultBox.innerHTML = '<span class="text-danger">Please select a date and time.</span>';
+                } else {
+                    resultBox.innerHTML = '<strong>Appointment set for:</strong> ' + selectedDate + ' at ' + selectedTime;
+                }
+            });
+        }
+    });
+});
+odoo.define('my_appointment_booking_calendar.calendar', function (require) {
+    "use strict";
+    const CalendarView = require('web.CalendarView');
+    CalendarView.include({
+        getDefaultOptions: function () {
+            const options = this._super.apply(this, arguments);
+            options.weekends = true;
+            options.defaultView = 'dayGridMonth';
+            return options;
+        },
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const confirmBtn = document.getElementById('confirmAppointmentBtn');
+        const resultBox = document.getElementById('appointmentResult');
+
+        if (confirmBtn && resultBox) {
+            confirmBtn.addEventListener('click', function () {
+                const selectedDate = document.querySelector('.btn-primary.select-date')?.dataset?.date;
+                const selectedTime = document.getElementById('time_select')?.value;
+                if (!selectedDate || !selectedTime) {
+                    resultBox.innerHTML = '<span class="text-danger">Please select a date and time.</span>';
+                } else {
+                    resultBox.innerHTML = '<strong>Appointment set for:</strong> ' + selectedDate + ' at ' + selectedTime;
+                }
+            });
+        }
+    });
+});
+from odoo import models, fields
+
+class Appointment(models.Model):
+    _name = 'my.appointment'
+    _description = 'Appointment'
+    _inherit = ['calendar.event']
+
+    name = fields.Char(string="Customer Name", required=True)
+    email = fields.Char(string="Email")
+    appointment_date = fields.Date(string="Appointment Date")
+    time_slot = fields.Selection([
+        ('9:00', '9:00 AM'),
+        ('11:00', '11:00 AM'),
+        ('13:00', '1:00 PM'),
+        ('15:00', '3:00 PM'),
+        ('17:00', '5:00 PM')
+    ], string="Time Slot")
+    notes = fields.Text(string="Notes")
