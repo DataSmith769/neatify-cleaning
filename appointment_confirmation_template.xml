@@ -1,0 +1,13 @@
+<odoo>
+    <template id="appointment_confirmation_page" name="Appointment Confirmation Page">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <div class="alert alert-success">
+                    <h2 class="text-success"><i class="fa fa-check-circle me-2"></i>Appointment Confirmed!</h2>
+                    <p>Your appointment has been successfully scheduled. Thank you for choosing us!</p>
+                    <a href="/shop/payment" class="btn btn-primary mt-3">Proceed to Payment</a>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

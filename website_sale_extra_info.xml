@@ -1,0 +1,123 @@
+<odoo>
+    <template id="website_sale_extra_info_custom" inherit_id="website_sale.extra_info">
+        <xpath expr="//t[@t-name='website_sale.extra_info']" position="replace">
+            <t t-call="website_sale.checkout_layout">
+                <t t-set="show_navigation_button" t-value="False"/>
+                <t t-set="redirect" t-value="'/shop/extra_info'"/>
+                <t t-set="oe_structure">
+                    <div class="oe_structure" id="oe_structure_website_sale_extra_info_1"/>
+                </t>
+
+                <h3 class="mb-4">Schedule Your Appointment</h3>
+                <div class="container mb-5">
+                    <div class="row">
+                        <div class="col-12 col-xl-8">
+                            <div id="calendar" class="bg-light p-4 border rounded"/>
+                        </div>
+                        <div class="col-12 col-xl-4 mt-3 mt-xl-0">
+                            <label for="time_select" class="form-label">Select Time:</label>
+                            <select id="time_select" class="form-select">
+                                <option>Select a time</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="s_website_form o_colored_level pt0">
+                    <div class="o_container_small">
+                        <form action="/shop/appointment-confirmation" method="get" class="o_mark_required s_website_form_no_recaptcha">
+                            <div class="s_website_form_rows s_col_no_bgcolor row"/>
+                            <div class="s_website_form_submit s_website_form_no_submit_option d-flex flex-column flex-lg-row align-items-stretch gap-4 pt3">
+                                <a href="/shop/checkout" class="btn btn-outline-secondary w-100 w-lg-auto mb-3 mb-lg-0 text-center">
+                                    <i class="fa fa-angle-left me-2 fw-light"/> Return to shipping
+                                </a>
+                                <button type="button" class="btn btn-outline-primary s_online_appointment mb-3 mb-lg-0 w-100 w-lg-auto">
+                                    Book an Appointment
+                                </button>
+                                <button type="submit" class="btn btn-success w-100 w-lg-auto" id="confirmAppointmentBtn">
+                                    Confirm Appointment
+                                </button>
+                            </div>
+                            <div class="text-muted mt-2" id="appointmentResult"/>
+                        </form>
+                    </div>
+                </section>
+
+                <script type="text/javascript">
+                <![CDATA[
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var calendarEl = document.getElementById('calendar');
+                        var timeSelect = document.getElementById('time_select');
+                        var resultBox = document.getElementById('appointmentResult');
+                        var selectedDate = null;
+
+                        function generateCalendar() {
+                            var now = new Date();
+                            var year = now.getFullYear();
+                            var month = now.getMonth();
+                            var daysInMonth = new Date(year, month + 1, 0).getDate();
+                            var firstDay = new Date(year, month, 1).getDay();
+
+                            var html = '<table class="table table-bordered"><thead><tr>';
+                            var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                            for (var d = 0; d < days.length; d++) html += '<th>' + days[d] + '</th>';
+                            html += '</tr></thead><tbody><tr>';
+
+                            for (var i = 0; i < firstDay; i++) html += '<td></td>';
+
+                            for (var day = 1; day <= daysInMonth; day++) {
+                                var date = new Date(year, month, day);
+                                if ((firstDay + day - 1) % 7 === 0) html += '</tr><tr>';
+                                var dateStr = date.toISOString().split('T')[0];
+                                html += '<td><button type="button" class="btn btn-sm btn-outline-dark w-100 select-date" data-date="' + dateStr + '">' + day + '</button></td>';
+                            }
+
+                            html += '</tr></tbody></table>';
+                            if (calendarEl) calendarEl.innerHTML = html;
+
+                            var buttons = document.querySelectorAll('.select-date');
+                            buttons.forEach(function (btn) {
+                                btn.addEventListener('click', function () {
+                                    buttons.forEach(function (b) {
+                                        if (b && b.classList) b.classList.remove('btn-primary');
+                                    });
+                                    if (btn && btn.classList) btn.classList.add('btn-primary');
+                                    selectedDate = btn.getAttribute('data-date');
+                                });
+                            });
+                        }
+
+                        function populateTimeOptions() {
+                            if (!timeSelect) return;
+                            var hours = [9, 11, 13, 15, 17];
+                            var options = '';
+                            for (var i = 0; i < hours.length; i++) {
+                                var h = hours[i];
+                                var suffix = h >= 12 ? 'PM' : 'AM';
+                                var hour = h > 12 ? h - 12 : h;
+                                options += '<option value="' + h + ':00">' + hour + ':00 ' + suffix + '</option>';
+                            }
+                            timeSelect.innerHTML = options;
+                        }
+
+                        generateCalendar();
+                        populateTimeOptions();
+
+                        var confirmBtn = document.getElementById('confirmAppointmentBtn');
+                        if (confirmBtn) {
+                            confirmBtn.addEventListener('click', function () {
+                                var time = timeSelect ? timeSelect.value : '';
+                                if (!selectedDate || !time || !resultBox) {
+                                    if (resultBox) resultBox.innerHTML = '<span class="text-danger">Please select a date and time.</span>';
+                                } else {
+                                    resultBox.innerHTML = '<strong>Appointment set for:</strong> ' + selectedDate + ' at ' + time;
+                                }
+                            });
+                        }
+                    });
+                ]]>
+                </script>
+            </t>
+        </xpath>
+    </template>
+</odoo>

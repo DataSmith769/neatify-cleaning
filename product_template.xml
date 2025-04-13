@@ -1,0 +1,45 @@
+<odoo>
+    <template id="house_square_footage_dropdown" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='product_detail']" position="inside">
+            <div class="form-group mt-3">
+                <label for="square_footage">Choose Square Footage:</label>
+                <select id="square_footage" class="form-control mb-2">
+                    <option value="0">Less than 1000 sqft</option>
+                    <option value="50">1000 - 1499 sqft (+$50)</option>
+                    <option value="100">1500 - 1999 sqft (+$100)</option>
+                    <option value="150">2000 - 2499 sqft (+$150)</option>
+                    <option value="200">2500 - 2999 sqft (+$200)</option>
+                    <option value="250">3000 - 3499 sqft (+$250)</option>
+                    <option value="300">3500 - 3999 sqft (+$300)</option>
+                    <option value="350">4000 - 4499 sqft (+$350)</option>
+                    <option value="400">4500 - 4999 sqft (+$400)</option>
+                    <option value="450">5000 - 5499 sqft (+$450)</option>
+                    <option value="500">5500 - 5999 sqft (+$500)</option>
+                    <option value="550">6000 - 6499 sqft (+$550)</option>
+                    <option value="600">6500 - 6999 sqft (+$600)</option>
+                    <option value="650">7000 - 7499 sqft (+$650)</option>
+                    <option value="700">7500 - 8000 sqft (+$700)</option>
+                </select>
+            </div>
+        </xpath>
+
+        <xpath expr="//body" position="inside">
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function () {
+                    const dropdown = document.getElementById('square_footage');
+                    const priceElem = document.querySelector('.oe_price .oe_currency_value');
+                    let basePrice = parseFloat(priceElem ? priceElem.innerText.replace(/[^0-9.]/g, '') : 0);
+                    let originalPrice = basePrice;
+
+                    if (dropdown && priceElem) {
+                        dropdown.addEventListener('change', function () {
+                            const extra = parseFloat(this.value);
+                            const newPrice = (originalPrice + extra).toFixed(2);
+                            priceElem.innerText = newPrice;
+                        });
+                    }
+                });
+            </script>
+        </xpath>
+    </template>
+</odoo>
