@@ -1,13 +1,11 @@
 {
-    "name": "Appointment Booking Integration",
+    "name": "Frontend Calendar Template Full",
     "version": "1.0",
+    "summary": "Injects a fully frontend calendar into /shop/extra_info page",
     "category": "Website",
-    "summary": "Calendar-based appointment booking",
+    "author": "ChatGPT",
     "depends": ["website_sale"],
-    "data": [
-        "views/website_sale_extra_info.xml",
-        "views/appointment_confirmation_template.xml"
-    ],
+    "data": ["views/calendar_frontend_template.xml"],
     "installable": True,
-    "auto_install": False
+    "application": False
 }

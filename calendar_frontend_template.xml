@@ -1,0 +1,100 @@
+<odoo>
+    <template id="calendar_frontend_template" name="Calendar Booking in Checkout">
+        <t t-call="website_sale.checkout_layout">
+            <t t-set="show_navigation_button" t-value="False"/>
+            <t t-set="redirect" t-value="'/shop/extra_info'"/>
+            <t t-set="oe_structure">
+                <div class="oe_structure" id="oe_structure_website_sale_extra_info_1"></div>
+            </t>
+
+            <h3 class="mb-4">Scheduling</h3>
+
+            <div class="container py-5">
+                <div class="row mb-5">
+                    <div class="col-12 col-xl-8">
+                        <div id="calendar" class="bg-light p-4 border rounded"></div>
+                    </div>
+                    <div class="col-12 col-xl-4 mt-3 mt-xl-0">
+                        <label for="time_select" class="form-label">Select Time:</label>
+                        <select id="time_select" class="form-select">
+                            <option value="">Select a time</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button id="confirmAppointmentBtn" class="btn btn-success">Confirm Appointment</button>
+                </div>
+
+                <div class="text-muted mt-3" id="appointmentResult"></div>
+            </div>
+
+            <script type="text/javascript">
+                <![CDATA[
+                document.addEventListener('DOMContentLoaded', function () {
+                    const calendarEl = document.getElementById('calendar');
+                    const timeSelect = document.getElementById('time_select');
+                    let selectedDate = null;
+
+                    function generateCalendar() {
+                        const now = new Date();
+                        const year = now.getFullYear();
+                        const month = now.getMonth();
+                        const daysInMonth = new Date(year, month + 1, 0).getDate();
+                        const firstDay = new Date(year, month, 1).getDay();
+
+                        let html = '<table class="table table-bordered"><thead><tr>';
+                        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                        for (let d = 0; d < days.length; d++) html += '<th>' + days[d] + '</th>';
+                        html += '</tr></thead><tbody><tr>';
+
+                        for (let i = 0; i < firstDay; i++) html += '<td></td>';
+
+                        for (let day = 1; day <= daysInMonth; day++) {
+                            const date = new Date(year, month, day);
+                            if ((firstDay + day - 1) % 7 === 0) html += '</tr><tr>';
+                            const dateStr = date.toISOString().split('T')[0];
+                            html += '<td><button type="button" class="btn btn-sm btn-outline-dark w-100 select-date" data-date="' + dateStr + '">' + day + '</button></td>';
+                        }
+
+                        html += '</tr></tbody></table>';
+                        calendarEl.innerHTML = html;
+
+                        document.querySelectorAll('.select-date').forEach(function (btn) {
+                            btn.addEventListener('click', function () {
+                                document.querySelectorAll('.select-date').forEach(b => b.classList.remove('btn-primary'));
+                                btn.classList.add('btn-primary');
+                                selectedDate = btn.getAttribute('data-date');
+                            });
+                        });
+                    }
+
+                    function populateTimeOptions() {
+                        const hours = [9, 11, 13, 15, 17];
+                        let options = '<option value="">Select a time</option>';
+                        for (let h of hours) {
+                            const suffix = h >= 12 ? 'PM' : 'AM';
+                            const hour = h > 12 ? h - 12 : h;
+                            options += `<option value="${h}:00">${hour}:00 ${suffix}</option>`;
+                        }
+                        timeSelect.innerHTML = options;
+                    }
+
+                    generateCalendar();
+                    populateTimeOptions();
+
+                    document.getElementById('confirmAppointmentBtn').addEventListener('click', function () {
+                        const time = timeSelect.value;
+                        const resultBox = document.getElementById('appointmentResult');
+                        if (!selectedDate || !time) {
+                            resultBox.innerHTML = '<span class="text-danger">Please select both a date and time.</span>';
+                        } else {
+                            resultBox.innerHTML = `<strong>Appointment confirmed:</strong> ${selectedDate} at ${time}`;
+                        }
+                    });
+                });
+                ]]>
+            </script>
+        </t>
+    </template>
+</odoo>
