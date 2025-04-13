@@ -1,0 +1,21 @@
+{
+    "name": "Calendar Booking Module",
+    "version": "1.0",
+    "summary": "Custom appointment booking calendar for Odoo",
+    "category": "Tools",
+    "author": "Eric Burgess",
+    "depends": ["base", "web", "website", "website_sale"],
+    "data": [
+        "views/calendar_template.xml"
+    ],
+    "assets": {
+        "web.assets_frontend": [
+            "calendar_booking_module/static/src/js/calendar.js"
+        ]
+    },
+    "installable": True,
+    "application": True,
+    "auto_install": False
+}
+# Auto detect text files and perform LF normalization
+* text=auto
